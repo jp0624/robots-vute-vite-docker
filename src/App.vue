@@ -4,7 +4,7 @@
 	import SimulationStats from "./components/SimulationStats.vue";
 	import WorldGrid from "./components/WorldGrid.vue";
 
-	// --- Types and Interfaces ---
+	// --- Types and Interfaces (Shared across files for clarity) ---
 
 	interface Robot {
 		id: number;
@@ -15,6 +15,28 @@
 
 	// Map for house state: Key is "x,y", Value is the number of presents delivered.
 	type Houses = Map<string, number>;
+
+	interface TileData {
+		x: number;
+		y: number;
+		key: string;
+		presents: number;
+		robotIds: number[];
+	}
+
+	interface HouseGridData {
+		rows: TileData[][];
+		minX: number;
+		minY: number;
+		maxX: number;
+		maxY: number;
+	}
+
+	interface RobotPosition {
+		id: number;
+		name: string;
+		position: string;
+	}
 
 	// --- Constants ---
 
@@ -56,9 +78,6 @@
 
 	// --- Core Logic ---
 
-	/**
-	 * Initializes the simulation state based on user input.
-	 */
 	function initializeSimulation() {
 		const num = numRobotsInput.value > 0 ? numRobotsInput.value : 1;
 
@@ -75,15 +94,15 @@
 			y: 0,
 		}));
 		houses.value = new Map();
+		// Deliver the first present at (0,0) before any moves, as per the problem standard
+		houses.value.set("0,0", 1);
+		totalPresentsDelivered.value = 1;
+
 		moveIndex.value = 0;
-		totalPresentsDelivered.value = 0;
 		isRunning.value = false;
 		stopSimulationInterval();
 	}
 
-	/**
-	 * Executes a single robot's turn based on the current move index.
-	 */
 	function step() {
 		if (moveIndex.value >= moveSequenceInput.value.length) {
 			stopSimulationInterval();
@@ -127,7 +146,6 @@
 		// 4. Deliver present if no collision
 		if (!collision) {
 			const key = `${newX},${newY}`;
-			// Use a temporary map to trigger Vue reactivity correctly on map update
 			const newHouses = new Map(houses.value);
 			newHouses.set(key, (newHouses.get(key) || 0) + 1);
 			houses.value = newHouses;
@@ -138,9 +156,6 @@
 		moveIndex.value++;
 	}
 
-	/**
-	 * Runs the entire simulation sequence immediately.
-	 */
 	function runFullSimulation() {
 		stopSimulationInterval();
 		initializeSimulation();
@@ -151,9 +166,6 @@
 		isRunning.value = false;
 	}
 
-	/**
-	 * Starts the interval for step-by-step visualization.
-	 */
 	function startVisualization() {
 		stopSimulationInterval();
 		initializeSimulation();
@@ -166,9 +178,6 @@
 		}, 1000 / stepsPerSecond.value);
 	}
 
-	/**
-	 * Stops the visualization interval.
-	 */
 	function stopSimulationInterval() {
 		if (simulationInterval !== null) {
 			clearInterval(simulationInterval);
@@ -187,8 +196,7 @@
 
 	// --- Computed Properties (Data for Components) ---
 
-	/** Query 1: Current position of the robots */
-	const robotPositions = computed(() => {
+	const robotPositions = computed<RobotPosition[]>(() => {
 		return robots.value.map((r) => ({
 			id: r.id,
 			name: r.name,
@@ -196,22 +204,18 @@
 		}));
 	});
 
-	/** Query 2: Total number of presents delivered */
 	const totalPresents = computed(() => totalPresentsDelivered.value);
 
-	/** Query 3: Number of houses with at least N presents */
-	const uniqueHousesQuery = computed(() => (minPresents: number) => {
+	const uniqueHousesWithOnePresent = computed(() => {
 		if (!houses.value) return 0;
 		let count = 0;
 		for (const presents of houses.value.values()) {
-			if (presents >= minPresents) {
+			if (presents >= 1) {
 				count++;
 			}
 		}
 		return count;
 	});
-
-	const uniqueHousesWithOnePresent = computed(() => uniqueHousesQuery.value(1));
 
 	const simulationStatus = computed(() => {
 		const totalMoves = moveSequenceInput.value.length;
@@ -236,29 +240,15 @@
 		}'`;
 	});
 
-	/** Grid Data for Visualization Component */
-	const houseGrid = computed(() => {
+	const houseGrid = computed<HouseGridData>(() => {
 		if (houses.value.size === 0)
-			return {
-				rows: [] as {
-					x: number;
-					y: number;
-					key: string;
-					presents: number;
-					robotIds: number[];
-				}[],
-				minX: 0,
-				minY: 0,
-				maxX: 0,
-				maxY: 0,
-			};
+			return { rows: [], minX: 0, minY: 0, maxX: 0, maxY: 0 };
 
 		let minX = 0,
 			minY = 0,
 			maxX = 0,
 			maxY = 0;
 
-		// Determine bounds from visited houses
 		for (const key of houses.value.keys()) {
 			const [x, y] = key.split(",").map(Number);
 			minX = Math.min(minX, x);
@@ -267,7 +257,6 @@
 			maxY = Math.max(maxY, y);
 		}
 
-		// Include current robot positions in the bounds
 		robots.value.forEach((r) => {
 			minX = Math.min(minX, r.x);
 			minY = Math.min(minY, r.y);
@@ -281,11 +270,11 @@
 		maxX += 2;
 		maxY += 2;
 
-		const rows = [];
+		const rows: TileData[][] = [];
 
 		// Render Y from Max (Top) to Min (Bottom) for Cartesian display
 		for (let y = maxY; y >= minY; y--) {
-			const row = [];
+			const row: TileData[] = [];
 			// Render X from Min (Left) to Max (Right)
 			for (let x = minX; x <= maxX; x++) {
 				const key = `${x},${y}`;
@@ -313,7 +302,6 @@
 			rules and collision checks.
 		</p>
 
-		<!-- Controls Component -->
 		<SimulationControls
 			v-model:numRobotsInput="numRobotsInput"
 			v-model:moveSequenceInput="moveSequenceInput"
@@ -326,9 +314,7 @@
 			@reset="initializeSimulation"
 		/>
 
-		<!-- Status and Results -->
 		<div class="grid md:grid-cols-2 gap-8">
-			<!-- Stats Component -->
 			<SimulationStats
 				:simulationMessage="simulationMessage"
 				:simulationStatus="simulationStatus"
@@ -337,7 +323,6 @@
 				:robotPositions="robotPositions"
 			/>
 
-			<!-- Visualization Component -->
 			<WorldGrid :houseGrid="houseGrid" />
 		</div>
 	</div>

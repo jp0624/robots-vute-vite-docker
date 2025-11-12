@@ -196,8 +196,11 @@
 
 		// 4. Revert Move Index
 		moveIndex.value = moveIndex.value - 1;
-
-		simulationMessage.value = `Stepped back to move ${moveIndex.value}. Robot ${robot.name} position reverted.`;
+		if (robot) {
+			simulationMessage.value = `Stepped back to move ${moveIndex.value}. Robot ${robot.name} position reverted.`;
+		} else {
+			simulationMessage.value = `Stepped back to move ${moveIndex.value}.`;
+		}
 	}
 
 	// --- Core Logic: Simulation Control ---
@@ -259,19 +262,21 @@
 		// --- RECORD HISTORY BEFORE MOVE ---
 		moveHistory.value.push({
 			robotIndex: robotIndex || 0,
-			prevX: robot.x,
-			prevY: robot.y,
+			prevX: robot.x || 0,
+			prevY: robot.y || 0,
 			housesSnapshot: new Map(houses.value), // Deep copy of the Houses map
 			presentsDeliveredBefore: totalPresentsDelivered.value,
 		});
 
 		// 1. Calculate new position
-		const newX = robot.x + move[0];
-		const newY = robot.y + move[1];
+		const newX = robot.x + move[0] || 0;
+		const newY = robot.y + move[1] || 0;
 
 		// 2. Update robot's position (move complete)
-		robot.x = newX;
-		robot.y = newY;
+		if (robot) {
+			robot.x = newX;
+			robot.y = newY;
+		}
 
 		// 3. Deliver present unconditionally (Collision check logic removed)
 		const key = `${newX},${newY}`;

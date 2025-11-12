@@ -8,19 +8,20 @@
 			:unique-houses-with-one-present="uniqueHousesWithOnePresent"
 		/>
 
-		<!-- Robot Positions (Includes unique colors from Option 2) -->
+		<!-- Robot Positions -->
 		<RobotPositionList :robot-positions="robotPositions" />
 
-		<!-- Grid Legend (Option 5) -->
+		<!-- Grid Legend -->
 		<GridLegend />
 	</div>
 </template>
 
 <script setup lang="ts">
 	import StatSummary from "./StatSummary.vue";
-	import RobotPositionList from "./RobotPositionList.vue";
+	import RobotPositionList, {
+		type RobotPosition,
+	} from "./RobotPositionList.vue";
 	import GridLegend from "./GridLegend.vue";
-	import { RobotPosition } from "./RobotPositionList.vue";
 
 	defineProps<{
 		simulationMessage: string;

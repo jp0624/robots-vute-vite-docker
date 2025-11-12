@@ -28,27 +28,7 @@
 
 <script setup lang="ts">
 	import GridTile from "./GridTile.vue";
-
-	interface RobotPresence {
-		id: number;
-		colorClass: string; // e.g., 'bg-red-500'
-	}
-
-	interface Tile {
-		x: number;
-		y: number;
-		key: string;
-		presents: number;
-		robotsPresent: RobotPresence[];
-	}
-
-	interface HouseGrid {
-		rows: Tile[][];
-		minX: number;
-		minY: number;
-		maxX: number;
-		maxY: number;
-	}
+	import type { RobotPresence, HouseGrid, Tile } from "../types";
 
 	defineProps<{
 		houseGrid: HouseGrid;

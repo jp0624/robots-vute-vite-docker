@@ -15,7 +15,6 @@
 					<span class="font-semibold text-gray-800">{{ robot.name }}</span>
 					<span class="text-xs text-gray-500">(ID: {{ robot.id }})</span>
 				</div>
-
 				<span class="font-bold text-indigo-600 text-lg font-mono">{{
 					robot.position
 				}}</span>

@@ -34,11 +34,7 @@
 
 <script setup lang="ts">
 	import { computed } from "vue";
-
-	interface RobotPresence {
-		id: number;
-		colorClass: string; // e.g., 'bg-red-500'
-	}
+	import type { RobotPresence } from "../types";
 
 	const props = defineProps<{
 		x: number;

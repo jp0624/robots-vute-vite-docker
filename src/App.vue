@@ -53,22 +53,7 @@
 	import WorldGrid from "./components/WorldGrid.vue";
 	import SimulationStats from "./components/SimulationStats.vue";
 	import SimulationControls from "./components/SimulationControls.vue";
-
-	// --- Interfaces ---
-
-	interface Robot {
-		id: number;
-		name: string;
-		x: number;
-		y: number;
-		colorClass: string;
-	}
-
-	interface SimulationState {
-		houses: [string, number][]; // Array of [key: string, count: number]
-		robots: Robot[];
-		moveIndex: number;
-	}
+	import type { Robot, SimulationState, RobotPosition } from "../types";
 
 	// --- State Management ---
 
@@ -318,7 +303,7 @@
 		return houses.value.size;
 	});
 
-	const robotPositions = computed(() => {
+	const robotPositions = computed<RobotPosition[]>(() => {
 		return robots.value.map((r) => ({
 			id: r.id,
 			name: r.name,

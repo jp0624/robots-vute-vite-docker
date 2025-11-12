@@ -2,12 +2,7 @@
 	import { defineProps } from "vue";
 	import StatSummary from "./StatSummary.vue";
 	import RobotPositionList from "./RobotPositionList.vue";
-
-	interface RobotPosition {
-		id: number;
-		name: string;
-		position: string;
-	}
+	import type { RobotPosition } from "../types";
 
 	const props = defineProps<{
 		simulationMessage: string;

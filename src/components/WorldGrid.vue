@@ -4,17 +4,17 @@
 			class="p-4 border w-auto max-w-full inline-block border-gray-300 rounded-lg shadow-inner bg-gray-50 max-h-[80vh] overflow-auto"
 		>
 			<div
-				v-for="row in houseGrid.rows"
-				:key="`y-${row && row[0].y}`"
+				v-for="row in houseGrid?.rows || []"
+				:key="`y-${row?.[0]?.y ?? Math.random()}`"
 				class="flex flex-nowrap"
 			>
 				<GridTile
-					v-for="tile in row"
-					:key="tile.key"
-					:x="tile.x"
-					:y="tile.y"
-					:presents="tile.presents"
-					:robots-present="tile.robotsPresent"
+					v-for="tile in row || []"
+					:key="tile?.key ?? Math.random()"
+					:x="tile?.x ?? 0"
+					:y="tile?.y ?? 0"
+					:presents="tile?.presents ?? 0"
+					:robots-present="tile?.robotsPresent ?? []"
 				/>
 			</div>
 		</div>

@@ -50,9 +50,9 @@
 
 <script setup lang="ts">
 	import { ref, computed, watch, onMounted, onUnmounted } from "vue";
-	import WorldGrid from "./WorldGrid.vue";
-	import SimulationStats from "./SimulationStats.vue";
-	import SimulationControls from "./SimulationControls.vue";
+	import WorldGrid from "./components/WorldGrid.vue";
+	import SimulationStats from "./components/SimulationStats.vue";
+	import SimulationControls from "./components/SimulationControls.vue";
 
 	// --- Interfaces ---
 
@@ -73,8 +73,10 @@
 	// --- State Management ---
 
 	// Inputs
-	const numRobotsInput = ref(2);
-	const moveSequenceInput = ref("^>v<");
+	const numRobotsInput = ref(3);
+	const moveSequenceInput = ref(
+		"^>^^>v<>vVV<^^^>v<>v<>vVV<v^^^>v<^>v<>vVV<>v<^>v<^>v<VVV<^>v<"
+	);
 	const stepsPerSecond = ref(5);
 
 	// Simulation State
@@ -373,10 +375,10 @@
 	// Calculate the grid to display
 	const houseGrid = computed(() => {
 		// Determine the bounds of the grid based on houses and robots
-		let minX = 0,
-			minY = 0,
-			maxX = 0,
-			maxY = 0;
+		let minX = -5,
+			minY = -5,
+			maxX = 5,
+			maxY = 5;
 
 		const positions = [
 			...Array.from(houses.value.keys()).map((key) => {

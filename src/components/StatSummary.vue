@@ -9,18 +9,18 @@
 			<p class="text-lg font-bold">{{ simulationStatus }}</p>
 		</div>
 
-		<div class="space-y-3">
-			<div class="flex justify-between items-center pt-2 border-t">
+		<div class="space-y-3 flex border-t text-sm">
+			<div class="flex items-center pt-2 flex-1">
 				<span class="text-gray-600 font-medium">Total Presents Delivered:</span>
-				<span class="font-extrabold text-indigo-600 text-2xl">{{
+				<span class="p-2.5 font-extrabold text-indigo-600 text-2xl">{{
 					totalPresents
 				}}</span>
 			</div>
-			<div class="flex justify-between items-center">
+			<div class="flex items-center flex-1">
 				<span class="text-gray-600 font-medium"
-					>Unique Houses with atleast 1 Present:</span
+					>Unique Houses with Present:</span
 				>
-				<span class="font-extrabold text-green-600 text-2xl">{{
+				<span class="p-2.5 font-extrabold text-green-600 text-2xl">{{
 					uniqueHousesWithOnePresent
 				}}</span>
 			</div>

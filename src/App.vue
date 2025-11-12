@@ -65,42 +65,37 @@
 	}
 
 	interface SimulationState {
-		houses: [string, number][]; // Array of [key: string, count: number]
+		houses: [string, number][];
 		robots: Robot[];
 		moveIndex: number;
 	}
 
 	// --- State Management ---
 
-	// Inputs
 	const numRobotsInput = ref(3);
 	const moveSequenceInput = ref(
 		"^>^^>v<>vVV<^^^>v<>v<>vVV<v^^^>v<^>v<>vVV<>v<^>v<^>v<VVV<^>v<"
 	);
 	const stepsPerSecond = ref(5);
 
-	// Simulation State
 	const robots = ref<Robot[]>([]);
-	// Key: "x,y", Value: count of presents
 	const houses = ref(new Map<string, number>());
 	const moveIndex = ref(0);
 	const isRunning = ref(false);
 	const visualizationInterval = ref<number | null>(null);
 
-	// History for Step Back
 	const history = [] as SimulationState[];
 	const MAX_HISTORY = 100;
 
 	// --- History & State Persistence ---
 
 	const saveHistory = () => {
-		// Only keep a limited history for performance
 		if (history.length >= MAX_HISTORY) {
 			history.shift();
 		}
 		history.push({
 			houses: Array.from(houses.value.entries()),
-			robots: robots.value.map((r) => ({ ...r })), // Deep copy robots
+			robots: robots.value.map((r) => ({ ...r })),
 			moveIndex: moveIndex.value,
 		});
 	};
@@ -124,27 +119,22 @@
 	};
 
 	const resetSimulation = () => {
-		// Stop any running visualization
 		stopVisualization();
 
-		// Reset state
 		houses.value = new Map<string, number>();
-		houses.value.set("0,0", 1); // Start with one present at (0,0)
+		houses.value.set("0,0", 1);
 		moveIndex.value = 0;
 		isRunning.value = false;
 		history.length = 0;
 
-		// Generate robots
 		robots.value = Array.from({ length: numRobotsInput.value }, (_, i) => ({
 			id: i + 1,
 			name: `Robot ${i + 1}`,
 			x: 0,
 			y: 0,
-			// FIX: TS2322 - Use non-null assertion as getRobotColorClass is guaranteed to return a string
-			colorClass: getRobotColorClass(i + 1)!,
+			colorClass: getRobotColorClass(i + 1),
 		}));
 
-		// Save initial state
 		saveHistory();
 	};
 
@@ -153,11 +143,9 @@
 	const stepForward = () => {
 		if (moveIndex.value >= moveSequenceInput.value.length) return;
 
-		const moveChar = moveSequenceInput.value[moveIndex.value];
+		const moveChar = moveSequenceInput.value[moveIndex.value] ?? "";
 		const robotIndex = moveIndex.value % numRobotsInput.value;
 		const robot = robots.value[robotIndex];
-
-		// FIX: TS18047 - Check if robot is defined before accessing properties (Lines 265, 266, 272, 273)
 		if (!robot) return;
 
 		let newX = robot.x;
@@ -165,40 +153,33 @@
 
 		switch (moveChar.toUpperCase()) {
 			case "^":
-				newY += 1; // North (Up)
+				newY += 1;
 				break;
 			case "V":
-				newY -= 1; // South (Down)
+				newY -= 1;
 				break;
 			case ">":
-				newX += 1; // East (Right)
+				newX += 1;
 				break;
 			case "<":
-				newX -= 1; // West (Left)
+				newX -= 1;
 				break;
 			default:
-				// Ignore invalid characters
 				break;
 		}
 
 		const newKey = `${newX},${newY}`;
 		const currentCount = houses.value.get(newKey) || 0;
 
-		// Check for collision with another robot at the new position
 		const collision = robots.value.some(
 			(r) => r.id !== robot.id && r.x === newX && r.y === newY
 		);
 
 		if (!collision) {
-			// Update the robot's position
 			robot.x = newX;
 			robot.y = newY;
-
-			// Deliver a present to the new house
 			houses.value.set(newKey, currentCount + 1);
 		} else {
-			// Collision detected: robot stays in its current position
-			// A present is delivered to the current house (before the attempted move)
 			const currentKey = `${robot.x},${robot.y}`;
 			const currentHouseCount = houses.value.get(currentKey) || 0;
 			houses.value.set(currentKey, currentHouseCount + 1);
@@ -214,7 +195,6 @@
 
 	const stepBack = () => {
 		if (moveIndex.value > 0) {
-			// Remove the current state (which corresponds to the state *after* moveIndex - 1)
 			history.pop();
 			moveIndex.value--;
 
@@ -224,24 +204,18 @@
 				robots.value = previousState.robots.map((r) => ({ ...r }));
 			}
 		} else {
-			// This is the initial state, where moveIndex is 0
-			// Restore to the very initial state
 			houses.value = new Map<string, number>();
 			houses.value.set("0,0", 1);
 			moveIndex.value = 0;
-			// Regenerate robots with default position (0,0) from the first history entry
 			const initialHistory = history[0];
 			robots.value = Array.from({ length: numRobotsInput.value }, (_, i) => {
 				const robotData = initialHistory?.robots.find((r) => r.id === i + 1);
 				return {
 					id: i + 1,
 					name: `Robot ${i + 1}`,
-					// FIX: TS2345 - Use nullish coalescing to default to 0 if x is undefined
 					x: robotData?.x ?? 0,
-					// FIX: TS2345 - Use nullish coalescing to default to 0 if y is undefined
 					y: robotData?.y ?? 0,
-					// Note: colorClass is guaranteed to be a string by definition but we ensure we grab it if available.
-					colorClass: robotData?.colorClass || getRobotColorClass(i + 1)!,
+					colorClass: robotData?.colorClass || getRobotColorClass(i + 1),
 				};
 			});
 		}
@@ -251,7 +225,6 @@
 		stopVisualization();
 		isRunning.value = false;
 
-		// Run all remaining moves at full speed
 		const totalMoves = moveSequenceInput.value.length;
 		while (moveIndex.value < totalMoves) {
 			stepForward();
@@ -272,7 +245,10 @@
 		if (moveIndex.value < moveSequenceInput.value.length && !isRunning.value) {
 			isRunning.value = true;
 			const delay = 1000 / stepsPerSecond.value;
-			visualizationInterval.value = setInterval(runVizStep, delay);
+			visualizationInterval.value = setInterval(
+				runVizStep,
+				delay
+			) as unknown as number;
 		}
 	};
 
@@ -284,18 +260,14 @@
 		}
 	};
 
-	// Watch for changes in speed input and update the interval if running
-	watch(stepsPerSecond, (newSpeed) => {
+	watch(stepsPerSecond, () => {
 		if (isRunning.value) {
 			stopVisualization();
 			startVisualization();
 		}
 	});
 
-	// Watch for changes in numRobots or moveSequence and reset
 	watch([numRobotsInput, moveSequenceInput], () => {
-		// Only reset if the simulation is not running to prevent an infinite loop
-		// or confusing behavior during visualization.
 		if (!isRunning.value) {
 			resetSimulation();
 		}
@@ -311,16 +283,14 @@
 		return total;
 	});
 
-	const uniqueHousesWithOnePresent = computed(() => {
-		return houses.value.size;
-	});
+	const uniqueHousesWithOnePresent = computed(() => houses.value.size);
 
 	const robotPositions = computed(() => {
 		return robots.value.map((r) => ({
 			id: r.id,
 			name: r.name,
 			position: `(${r.x}, ${r.y})`,
-			colorClass: r.colorClass,
+			colorClass: r.colorClass, // ✅ ensure colorClass included
 		}));
 	});
 
@@ -341,7 +311,7 @@
 
 		const robotIndex = currentMoveIndex % numRobots;
 		const currentRobot = robots.value[robotIndex];
-		const moveChar = moveSequenceInput.value[currentMoveIndex];
+		const moveChar = moveSequenceInput.value[currentMoveIndex] ?? "";
 
 		if (currentRobot) {
 			return `Next: ${currentRobot.name} (ID: ${currentRobot.id}) moves '${moveChar}'`;
@@ -372,9 +342,7 @@
 		} of ${totalMoves}. Robot ${currentRobot?.id} to move.`;
 	});
 
-	// Calculate the grid to display
 	const houseGrid = computed(() => {
-		// Determine the bounds of the grid based on houses and robots
 		let minX = -5,
 			minY = -5,
 			maxX = 5,
@@ -395,17 +363,14 @@
 			maxY = Math.max(maxY, y);
 		});
 
-		// Add a one-unit padding around the furthest positions
 		minX -= 1;
 		minY -= 1;
 		maxX += 1;
 		maxY += 1;
 
 		const rows = [];
-		// Iterate from max Y (Top) to min Y (Bottom) for rendering
 		for (let y = maxY; y >= minY; y--) {
 			const row = [];
-			// Iterate from min X (Left) to max X (Right).
 			for (let x = minX; x <= maxX; x++) {
 				const key = `${x},${y}`;
 				const presents = houses.value.get(key) || 0;
@@ -428,7 +393,6 @@
 	// --- Lifecycle Hooks ---
 
 	onMounted(() => {
-		// Initialize simulation on mount
 		resetSimulation();
 	});
 

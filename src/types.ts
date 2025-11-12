@@ -4,12 +4,15 @@ export interface Robot {
 	x: number;
 	y: number;
 	colorClass: string;
+	collision?: boolean;
 }
+
 export interface SimulationState {
-	houses: [string, number][]; // Array of [key: string, count: number]
+	houses: [string, number][];
 	robots: Robot[];
 	moveIndex: number;
 }
+
 export interface RobotPosition {
 	id: number;
 	name: string;
@@ -23,11 +26,13 @@ export interface Tile {
 	key: string;
 	presents: number;
 	robotsPresent: RobotPresence[];
+	collision?: boolean;
 }
 
 export interface RobotPresence {
 	id: number;
-	colorClass: string; // e.g., 'bg-red-500'
+	colorClass: string;
+	collision?: boolean;
 }
 
 export interface HouseGrid {

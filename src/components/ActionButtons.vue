@@ -1,6 +1,5 @@
 <template>
 	<div class="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
-		<!-- Run / Start Visualization / Stop -->
 		<button
 			@click="
 				isRunning
@@ -22,7 +21,6 @@
 			}}
 		</button>
 
-		<!-- Step Forward -->
 		<button
 			@click="$emit('step-forward')"
 			:disabled="isRunning || moveIndex >= moveSequenceLength"
@@ -31,7 +29,6 @@
 			Step Forward
 		</button>
 
-		<!-- Step Back (History Feature) -->
 		<button
 			@click="$emit('step-back')"
 			:disabled="!canStepBack"
@@ -40,7 +37,6 @@
 			Step Back
 		</button>
 
-		<!-- Reset -->
 		<button
 			@click="$emit('reset')"
 			class="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition duration-150 ease-in-out"
@@ -48,7 +44,6 @@
 			Reset
 		</button>
 
-		<!-- Status Indicator -->
 		<div
 			class="flex items-center ml-auto px-4 py-2 text-sm font-medium rounded-lg bg-gray-50 text-gray-600"
 		>

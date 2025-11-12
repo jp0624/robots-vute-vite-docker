@@ -4,7 +4,6 @@
 			Simulation Controls
 		</h2>
 
-		<!-- Inputs for Robots and Sequence -->
 		<ControlInputs
 			:num-robots-input="numRobotsInput"
 			:move-sequence-input="moveSequenceInput"
@@ -14,7 +13,6 @@
 			@update:move-sequence-input="$emit('update:move-sequence-input', $event)"
 		/>
 
-		<!-- Visualization Speed Slider (Option 1) -->
 		<div class="mb-6 mt-4">
 			<label
 				for="stepsPerSecond"
@@ -28,12 +26,7 @@
 				type="range"
 				id="stepsPerSecond"
 				:value="stepsPerSecond"
-				@input="
-					$emit(
-						'update:steps-per-second',
-						parseInt(($event.target as HTMLInputElement).value)
-					)
-				"
+				@input="$emit('update:steps-per-second', parseInt($event.target.value))"
 				min="1"
 				max="20"
 				step="1"
@@ -42,7 +35,6 @@
 			/>
 		</div>
 
-		<!-- Action Buttons -->
 		<ActionButtons
 			:is-running="isRunning"
 			:move-index="moveIndex"
@@ -65,10 +57,10 @@
 	defineProps<{
 		numRobotsInput: number;
 		moveSequenceInput: string;
+		stepsPerSecond: number;
 		isRunning: boolean;
 		moveIndex: number;
 		moveSequenceLength: number;
-		stepsPerSecond: number;
 		canStepBack: boolean;
 	}>();
 

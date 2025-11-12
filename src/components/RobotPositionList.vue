@@ -27,11 +27,11 @@
 </template>
 
 <script setup lang="ts">
-	interface RobotPosition {
+	export interface RobotPosition {
 		id: number;
 		name: string;
 		position: string;
-		colorClass: string; // Tailwind class for color (e.g., 'bg-red-500')
+		colorClass: string;
 	}
 
 	defineProps<{

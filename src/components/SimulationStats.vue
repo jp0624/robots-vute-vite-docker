@@ -20,6 +20,7 @@
 	import StatSummary from "./StatSummary.vue";
 	import RobotPositionList from "./RobotPositionList.vue";
 	import GridLegend from "./GridLegend.vue";
+	import { RobotPosition } from "./RobotPositionList.vue";
 
 	defineProps<{
 		simulationMessage: string;

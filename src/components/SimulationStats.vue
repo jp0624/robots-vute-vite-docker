@@ -27,6 +27,6 @@
 		simulationStatus: string;
 		totalPresents: number;
 		uniqueHousesWithOnePresent: number;
-		robotPositions: [];
+		robotPositions: object;
 	}>();
 </script>

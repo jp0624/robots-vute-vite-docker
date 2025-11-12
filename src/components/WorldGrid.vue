@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 	import GridTile from "./GridTile.vue";
-	import type { RobotPresence, HouseGrid, Tile } from "../types";
+	import type { HouseGrid } from "../types";
 
 	defineProps<{
 		houseGrid: HouseGrid;

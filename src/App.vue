@@ -85,7 +85,7 @@
 		}
 		history.push({
 			houses: Array.from(houses.value.entries()),
-			robots: robots.value.map((r) => ({ ...r })), // Deep copy robots
+			robots: robots.value.map((r: Robot) => ({ ...r })), // Deep copy robots
 			moveIndex: moveIndex.value,
 		});
 	};
@@ -172,7 +172,7 @@
 
 		// Check for collision with another robot at the new position
 		const collision = robots.value.some(
-			(r) => r.id !== robot.id && r.x === newX && r.y === newY
+			(r: Robot) => r.id !== robot.id && r.x === newX && r.y === newY
 		);
 
 		if (!collision) {
@@ -207,7 +207,7 @@
 			const previousState = history[history.length - 1];
 			if (previousState) {
 				houses.value = new Map(previousState.houses);
-				robots.value = previousState.robots.map((r) => ({ ...r }));
+				robots.value = previousState.robots.map((r: Robot) => ({ ...r }));
 			}
 		} else {
 			// This is the initial state, where moveIndex is 0
@@ -218,7 +218,9 @@
 			// Regenerate robots with default position (0,0) from the first history entry
 			const initialHistory = history[0];
 			robots.value = Array.from({ length: numRobotsInput.value }, (_, i) => {
-				const robotData = initialHistory?.robots.find((r) => r.id === i + 1);
+				const robotData = initialHistory?.robots.find(
+					(r: Robot) => r.id === i + 1
+				);
 				return {
 					id: i + 1,
 					name: `Robot ${i + 1}`,
@@ -304,7 +306,7 @@
 	});
 
 	const robotPositions = computed<RobotPosition[]>(() => {
-		return robots.value.map((r) => ({
+		return robots.value.map((r: Robot) => ({
 			id: r.id,
 			name: r.name,
 			position: `(${r.x}, ${r.y})`,
@@ -373,7 +375,7 @@
 				const [x, y] = key.split(",").map(Number);
 				return { x, y };
 			}),
-			...robots.value.map((r) => ({ x: r.x, y: r.y })),
+			...robots.value.map((r: Robot) => ({ x: r.x, y: r.y })),
 		];
 
 		if (positions.length === 0) {
@@ -402,8 +404,8 @@
 				const presents = houses.value.get(key) || 0;
 
 				const robotsPresent = robots.value
-					.filter((r) => r.x === x && r.y === y)
-					.map((r) => ({
+					.filter((r: Robot) => r.x === x && r.y === y)
+					.map((r: Robot) => ({
 						id: r.id,
 						colorClass: r.colorClass,
 					}));

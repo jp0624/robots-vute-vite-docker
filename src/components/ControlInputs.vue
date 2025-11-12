@@ -8,7 +8,12 @@
 				type="number"
 				id="numRobots"
 				:value="numRobotsInput"
-				@input="$emit('update:num-robots-input', parseInt($event.target.value))"
+				@input="
+					$emit(
+						'update:num-robots-input',
+						parseInt(($event.target as HTMLInputElement)?.value ?? '0')
+					)
+				"
 				:disabled="isRunning"
 				min="1"
 				class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500"
@@ -24,7 +29,10 @@
 				id="moveSequence"
 				:value="moveSequenceInput"
 				@input="
-					$emit('update:move-sequence-input', $event.target.value.toUpperCase())
+					$emit(
+						'update:move-sequence-input',
+						($event.target as HTMLInputElement)?.value ?? ''
+					)
 				"
 				:disabled="isRunning"
 				class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border font-mono uppercase tracking-widest focus:ring-blue-500 focus:border-blue-500"

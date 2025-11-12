@@ -52,7 +52,7 @@
 	import WorldGrid from "./components/WorldGrid.vue";
 	import SimulationStats from "./components/SimulationStats.vue";
 	import SimulationControls from "./components/SimulationControls.vue";
-	import type { Robot, SimulationState } from "../types";
+	import type { Robot, SimulationState } from "./types";
 
 	const numRobotsInput = ref(3);
 	const moveSequenceInput = ref(
@@ -72,7 +72,7 @@
 		if (history.length >= MAX_HISTORY) history.shift();
 		history.push({
 			houses: Array.from(houses.value.entries()),
-			robots: robots.value.map((r) => ({ ...r })),
+			robots: robots.value.map((r: Robot) => ({ ...r })),
 			moveIndex: moveIndex.value,
 		});
 	};
@@ -115,7 +115,7 @@
 	const stepForward = () => {
 		if (moveIndex.value >= moveSequenceInput.value.length) return;
 
-		robots.value.forEach((r) => (r.collision = false));
+		robots.value.forEach((r: Robot) => (r.collision = false));
 
 		const moveChar = moveSequenceInput.value[moveIndex.value] ?? "";
 		const robotIndex = moveIndex.value % numRobotsInput.value;
@@ -141,7 +141,7 @@
 		}
 
 		const collision = robots.value.some(
-			(r) => r.id !== robot.id && r.x === newX && r.y === newY
+			(r: Robot) => r.id !== robot.id && r.x === newX && r.y === newY
 		);
 
 		if (!collision) {
@@ -168,7 +168,7 @@
 			const previousState = history[history.length - 1];
 			if (previousState) {
 				houses.value = new Map(previousState.houses);
-				robots.value = previousState.robots.map((r) => ({ ...r }));
+				robots.value = previousState.robots.map((r: Robot) => ({ ...r }));
 			}
 		} else {
 			resetSimulation();
@@ -221,7 +221,7 @@
 	);
 	const uniqueHousesWithOnePresent = computed(() => houses.value.size);
 	const robotPositions = computed(() =>
-		robots.value.map((r) => ({
+		robots.value.map((r: Robot) => ({
 			id: r.id,
 			name: r.name,
 			position: `(${r.x},${r.y})`,
@@ -268,7 +268,11 @@
 				const [x, y] = k.split(",").map(Number);
 				return { x, y };
 			}),
-			...robots.value.map((r) => ({ x: r.x, y: r.y, collision: r.collision })),
+			...robots.value.map((r: Robot) => ({
+				x: r.x,
+				y: r.y,
+				collision: r.collision,
+			})),
 		];
 		positions.forEach(({ x, y }) => {
 			minX = Math.min(minX, x);
@@ -288,7 +292,7 @@
 				const key = `${x},${y}`;
 				const presents = houses.value.get(key) || 0;
 				const robotsPresent = robots.value.filter(
-					(r) => r.x === x && r.y === y
+					(r: Robot) => r.x === x && r.y === y
 				);
 				row.push({ x, y, key, presents, robotsPresent });
 			}

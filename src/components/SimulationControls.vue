@@ -26,7 +26,12 @@
 				type="range"
 				id="stepsPerSecond"
 				:value="stepsPerSecond"
-				@input="$emit('update:steps-per-second', parseInt($event.target.value))"
+				@input="
+					$emit(
+						'update:steps-per-second',
+						parseInt(($event.target as HTMLInputElement)?.value ?? '1')
+					)
+				"
 				min="1"
 				max="20"
 				step="1"

@@ -9,7 +9,7 @@
 		/>
 
 		<!-- Robot Positions (Includes unique colors from Option 2) -->
-		<RobotPositionList :robot-positions="robotPositions" />
+		<RobotPositionList :robot-positions="robotPositions as RobotPosition[]" />
 
 		<!-- Grid Legend (Option 5) -->
 		<GridLegend />

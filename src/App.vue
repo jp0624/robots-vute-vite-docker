@@ -183,8 +183,10 @@
 		const robot = robots.value[lastMove.robotIndex];
 
 		// 1. Revert Robot Position
-		robot.x = lastMove.prevX;
-		robot.y = lastMove.prevY;
+		if (robot) {
+			robot.x = lastMove.prevX;
+			robot.y = lastMove.prevY;
+		}
 
 		// 2. Revert House State
 		houses.value = lastMove.housesSnapshot;
@@ -244,8 +246,8 @@
 
 		const num = robots.value.length;
 		const robotIndex = moveIndex.value % num;
-		const robot = robots.value[robotIndex];
-		const command = moveSequenceInput.value[moveIndex.value];
+		const robot = robots.value[robotIndex] || null;
+		const command = moveSequenceInput.value[moveIndex.value] || "";
 		const move = MOVE_MAP[command];
 
 		if (!move) {
@@ -256,7 +258,7 @@
 
 		// --- RECORD HISTORY BEFORE MOVE ---
 		moveHistory.value.push({
-			robotIndex: robotIndex,
+			robotIndex: robotIndex || 0,
 			prevX: robot.x,
 			prevY: robot.y,
 			housesSnapshot: new Map(houses.value), // Deep copy of the Houses map

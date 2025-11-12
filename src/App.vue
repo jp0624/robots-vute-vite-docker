@@ -141,7 +141,7 @@
 			name: `Robot ${i + 1}`,
 			x: 0,
 			y: 0,
-			colorClass: getRobotColorClass(i + 1), // string guaranteed
+			colorClass: getRobotColorClass(i + 1) || "",
 		}));
 
 		// Save initial state
@@ -237,11 +237,10 @@
 				return {
 					id: i + 1,
 					name: `Robot ${i + 1}`,
-					// Use nullish coalescing to ensure numbers are defined
 					x: robotData?.x ?? 0,
 					y: robotData?.y ?? 0,
-					// Ensure colorClass is always a string (fallback to getRobotColorClass)
-					colorClass: robotData?.colorClass ?? getRobotColorClass(i + 1),
+					colorClass:
+						robotData?.colorClass ?? (getRobotColorClass(i + 1) || ""), // ✅ ensure string
 				};
 			});
 		}
@@ -396,10 +395,10 @@
 			return { rows: [], minX, minY, maxX, maxY };
 		}
 		positions.forEach(({ x, y }) => {
-			minX = Math.min(minX, x) || 0;
-			minY = Math.min(minY, y) || 0;
-			maxX = Math.max(maxX, x) || 0;
-			maxY = Math.max(maxY, y) || 0;
+			minX = Math.min(minX ?? 0, x ?? 0);
+			minY = Math.min(minY ?? 0, y ?? 0);
+			maxX = Math.max(maxX ?? 0, x ?? 0);
+			maxY = Math.max(maxY ?? 0, y ?? 0);
 		});
 
 		// Add a one-unit padding around the furthest positions
